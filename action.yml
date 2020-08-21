@@ -1,0 +1,57 @@
+name: docker-context-create
+description: Creates a docker context pointing to a remote docker engine using SSH authentication
+inputs:
+
+  ssh_cert:
+    required: false
+    description: SSH server public key for remote docker authentification
+
+  ssh_key:
+    required: false
+    description: SSH client private key for remote docker authentification
+
+  docker_host:
+    required: true
+    description: URL to the remote docker engine in format ssh://username@hostname.domain.tld
+
+  context_name:
+    required: true    
+    description: Name of the remote context on the local docker client
+
+  use_context:
+    required: false
+    default: 'false'
+    description: Indicates wether the docker context is set as the curent docker context
+
+runs:
+  using: composite
+  steps:
+
+    - shell: bash
+      name: Create ssh directory
+      run: mkdir --parents $HOME/.ssh
+
+    - shell: bash
+      name: Start SSH Agent
+      run: |
+        if [ -z "$SSH_AGENT_PID" ]; then
+          eval $(ssh-agent)
+          echo "::set-env name=SSH_AUTH_SOCK::$SSH_AUTH_SOCK"
+          echo "::set-env name=SSH_AGENT_PID::$SSH_AGENT_PID"
+        fi        
+
+    - shell: bash
+      name: Configure SSH server public key
+      run:  if [ -n "${{ inputs.ssh_cert }}" ]; then echo "${{ inputs.ssh_cert }}" >> "$HOME/.ssh/known_hosts"; fi
+
+    - shell: bash
+      name: Configure SSH client private key
+      run: if [ -n "${{ inputs.ssh_key }}" ]; then echo "${{ inputs.ssh_key }}" | ssh-add - ; fi
+
+    - shell: bash
+      name: Create the docker remote context
+      run: docker context create "${{ inputs.context_name }}" --docker "host=${{ inputs.docker_host }}"
+
+    - shell: bash
+      name: Set as current context
+      run: if [ "true" == "${{ inputs.use_context}}" ]; then docker context use "${{ inputs.context_name }}"; fi
