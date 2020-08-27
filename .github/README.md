@@ -1,6 +1,6 @@
-# Actions Docker Context
+# Github Action creating SSH Docker context
 
-This action creates a docker context, allowing access to a remote docker engine over SSH from your workflows. By default, you must refer to the context by its name, or you can set `use_context` to set that context as the current docker context.
+This action creates a [docker context](https://docs.docker.com/engine/context/working-with-contexts/), allowing access to a remote docker engine over SSH from your workflows. By default, you must refer to the context by its name with the `--context` switch, or you can set `use_context` to true in order to set that new context as the current docker context.
 
 ## Inputs
 
@@ -15,10 +15,12 @@ If set to `true`, the docker context will be set as the current docker context. 
 
 ### ssh_cert
 Public key of the SSH server, in `known_hosts` format.
+The public key is added to the current user's `known_hosts` file, and you can reuse previously added keys.
 Using a Github secret is recommended.
 
 ### ssh_key
 Private key of the SSH client.
+The key is stored using ssh-agent, so you can reuse an existing private key instead.
 Using a Github secret is recommended.
 
 ## Example
