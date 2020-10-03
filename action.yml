@@ -1,5 +1,9 @@
 name: docker-context-create
 description: Creates a docker context pointing to a remote docker engine using SSH authentication
+branding:
+  icon: 'anchor'
+  color: 'blue'
+  
 inputs:
 
   ssh_cert:
