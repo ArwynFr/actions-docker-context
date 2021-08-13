@@ -35,7 +35,7 @@ jobs:
     name: 'Publish on the development server'
     steps:
 
-    - uses: arwynfr/actions-docker-context@v1
+    - uses: arwynfr/actions-docker-context@v2
       with:
         docker_host: 'ssh://someone@example.domain.tld'
         context_name: 'dev-server'
